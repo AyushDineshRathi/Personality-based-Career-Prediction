@@ -1,0 +1,256 @@
+/* --- Base and Layout --- */
+:root {
+    --primary-color: #4a00e0;
+    --secondary-color: #8e2de2;
+    --background-color: #f0f2f5;
+    --text-color: #333;
+    --card-bg: #ffffff;
+    --progress-bar-color: #56ab2f;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    transition: background-color 0.5s ease;
+}
+
+.app-container {
+    width: 100%;
+    max-width: 600px;
+    height: 100vh;
+    max-height: 800px;
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.view {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s;
+    display: flex;
+    flex-direction: column;
+}
+
+.view.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* --- Progress Bar --- */
+#progress-container {
+    padding: 20px 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+#section-title {
+    color: var(--primary-color);
+}
+
+.progress-bar-background {
+    width: 100%;
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+}
+
+#progress-bar-foreground {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #56ab2f, #a8e063);
+    border-radius: 4px;
+    transition: width 0.4s ease-out;
+}
+
+/* --- Quiz Content --- */
+#quiz-content {
+    flex-grow: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+}
+
+.question-card {
+    width: 100%;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.question-card.fade-out {
+    animation: fadeOut 0.3s ease-in forwards;
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-20px); }
+}
+
+
+.question-text {
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #444;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* --- Option Buttons --- */
+.option-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 1em;
+    font-weight: 500;
+    color: var(--primary-color);
+    background-color: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    transform: scale(1);
+}
+
+.option-btn:hover {
+    background-color: #e9ecef;
+    border-color: var(--primary-color);
+}
+
+.option-btn.selected {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-color: var(--primary-color);
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Slider --- */
+.slider-container {
+    text-align: center;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+}
+
+input[type="range"]:hover {
+    opacity: 1;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.slider-value {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 15px;
+}
+
+/* --- Results View --- */
+#results-view {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+}
+
+.results-card {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+.results-card h2 {
+    color: #555;
+    font-weight: 500;
+}
+
+#career-result {
+    font-size: 2.5em;
+    color: var(--primary-color);
+    margin: 10px 0;
+}
+
+#confidence-result {
+    font-size: 1.2em;
+    color: #777;
+    margin-bottom: 30px;
+}
+
+#restart-btn {
+    padding: 15px 30px;
+    font-size: 1.1em;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#restart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 0, 224, 0.3);
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 600px) {
+    .app-container {
+        border-radius: 0;
+        max-height: 100vh;
+    }
+    .question-text {
+        font-size: 1.3em;
+    }
+    #career-result {
+        font-size: 2em;
+    }
+}
