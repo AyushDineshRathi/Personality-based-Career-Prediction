@@ -78,8 +78,7 @@ Keep this terminal open while running the app.
 ### **2. Clone the Repository**
 
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+https://github.com/AyushDineshRathi/Personality-based-Career-Prediction.git
 ```
 
 ---
@@ -129,7 +128,7 @@ The trained model files (`.h5`, `.gz`) are **not included** in the repository.
 Generate them using the training script:
 
 ```bash
-python retrain_model.py
+Run the career.ipynb file
 ```
 
 After successful training, you should see:
