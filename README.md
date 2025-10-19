@@ -13,9 +13,6 @@ Instead of a static form, the application provides a **modern, multi-step quiz e
 | ----------------------------------------------- | -------------------------------------------------------------------- |
 | ![Quiz Screenshot](assets/screenshots/quiz.png) | ![Recommendation Screenshot](assets/screenshots/recommendation.png) |
 
-> 🖼️ *Place your screenshots inside the folder:* `assets/screenshots/`
-> *Then update the file names above accordingly.*
-
 ---
 
 ## ✨ Key Features
