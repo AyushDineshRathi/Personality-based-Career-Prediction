@@ -1,358 +1,230 @@
-// Wait for the DOM to be fully loaded before running the script
 document.addEventListener('DOMContentLoaded', () => {
+    const questions = {
+        'Technical Interests': [
+            { id: 'interest_programming', text: 'How interested are you in Programming & Algorithmic Logic?', type: 'slider', min: 1, max: 5 },
+            { id: 'interest_data_analysis', text: 'How interested are you in Data Analysis & Statistics?', type: 'slider', min: 1, max: 5 },
+            { id: 'interest_system_architecture', text: 'How interested are you in System Architecture & Design?', type: 'slider', min: 1, max: 5 },
+            { id: 'interest_hardware', text: 'How interested are you in Hardware & Physical Systems (circuits, robotics, engines)?', type: 'slider', min: 1, max: 5 },
+            { id: 'interest_visual_design', text: 'How interested are you in Visual Design & User Experience?', type: 'slider', min: 1, max: 5 }
+        ],
+        'Work Style': [
+            { id: 'workstyle_focus', text: 'Do you prefer focusing on deep, specific tasks or big-picture strategy?', type: 'radio', options: { 1: 'Deep Tasks', 3: 'A Mix', 5: 'Big Picture' } },
+            { id: 'workstyle_collaboration', text: 'Do you work best alone or in a team?', type: 'radio', options: { 1: 'Alone', 3: 'A Mix', 5: 'In a Team' } },
+            { id: 'workstyle_pace', text: 'What work pace do you prefer?', type: 'radio', options: { 1: 'Stable & Predictable', 3: 'A Mix', 5: 'Fast-Paced & Dynamic' } },
+            { id: 'workstyle_problem_type', text: 'What kind of problems do you prefer to solve?', type: 'radio', options: { 1: 'Abstract & Theoretical', 3: 'A Mix', 5: 'Concrete & Tangible' } }
+        ],
+        'Self-Assessed Skills': [
+            { id: 'skill_abstract_problem_solving', text: 'Rate your confidence in Abstract Problem Solving (puzzles, logic).', type: 'slider', min: 1, max: 5 },
+            { id: 'skill_math_quantitative', text: 'Rate your confidence in Mathematical & Quantitative Reasoning.', type: 'slider', min: 1, max: 5 },
+            { id: 'skill_communication_storytelling', text: 'Rate your confidence in Communication & Storytelling (presenting, writing).', type: 'slider', min: 1, max: 5 },
+            { id: 'skill_visual_design', text: 'Rate your confidence in your sense for Visual Design & Aesthetics.', type: 'slider', min: 1, max: 5 },
+            { id: 'skill_leadership', text: 'Rate your confidence in Leadership & People Management.', type: 'slider', min: 1, max: 5 }
+        ],
+        'Motivators & Preferences': [
+            { id: 'motivator_primary_driver', text: 'What is your single biggest motivator at work?', type: 'select', options: { 1: 'Solving technical challenges', 2: 'Creating products people love', 3: 'Leading teams & business goals', 4: 'High financial rewards', 5: 'Creative freedom' } },
+            { id: 'motivator_risk_tolerance', text: 'What\'s your risk tolerance?', type: 'radio', options: { 1: 'Very Risk-Averse', 3: 'Cautiously Optimistic', 5: 'High Risk-Taker' } },
+            { id: 'pref_learning_style', text: 'How do you prefer to learn a new, complex technology?', type: 'select', options: { 1: 'Reading Docs/Theory', 2: 'Watching Tutorials', 3: 'Experimenting' } },
+            { id: 'pref_project_type', text: 'Do you prefer building new things or optimizing existing ones?', type: 'radio', options: { 1: 'Build From Scratch', 3: 'A Mix', 5: 'Optimize Existing Systems' } },
+            { id: 'pref_core_focus', text: 'Are you more driven by the \'Why\' (Theory) or the \'How\' (Application)?', type: 'radio', options: { 1: 'The "Why" (Theory)', 3: 'A Balance', 5: 'The "How" (Application)' } },
+            { id: 'pref_user_proximity', text: 'How important is direct user interaction for you?', type: 'radio', options: { 1: 'Not Important', 3: 'It\'s Nice to Have', 5: 'Extremely Important' } },
+            { id: 'pref_patience_for_impact', text: 'Do you prefer long-term projects or seeing results quickly?', type: 'radio', options: { 1: 'Long-Term Impact', 3: 'A Mix', 5: 'Quick Results' } }
+        ]
+    };
 
-    // --- DOM Element References ---
-    const quizView = document.getElementById('quiz-view');
-    const resultsView = document.getElementById('results-view');
-    const quizContent = document.getElementById('quiz-content');
-    const sectionTitle = document.getElementById('section-title');
-    const questionCounter = document.getElementById('question-counter');
-    const progressBar = document.getElementById('progress-bar-foreground');
-    const careerResult = document.getElementById('career-result');
-    const confidenceResult = document.getElementById('confidence-result');
-    const restartBtn = document.getElementById('restart-btn');
+    // Flatten the question groups into a single array for easier navigation
+    const questionGroups = Object.keys(questions).map(groupName => {
+        return questions[groupName].map(q => ({ ...q, group: groupName }));
+    }).flat();
 
-    // --- Quiz Data and State ---
-    const userAnswers = {};
     let currentQuestionIndex = 0;
+    const userAnswers = {};
 
-    // The entire questionnaire, structured for the gamified UI
-    const quizData = [
-        // Section 1: Technical Interests
-        {
-            section: "Technical Interests",
-            id: 'interest_programming',
-            type: 'slider',
-            text: 'How interested are you in Programming & Algorithmic Logic?'
-        },
-        {
-            section: "Technical Interests",
-            id: 'interest_data_analysis',
-            type: 'slider',
-            text: 'How interested are you in Data Analysis & Statistics?'
-        },
-        {
-            section: "Technical Interests",
-            id: 'interest_system_architecture',
-            type: 'slider',
-            text: 'How interested are you in System Architecture & Design?'
-        },
-        {
-            section: "Technical Interests",
-            id: 'interest_hardware',
-            type: 'slider',
-            text: 'How interested are you in Hardware & Physical Systems?'
-        },
-        {
-            section: "Technical Interests",
-            id: 'interest_visual_design',
-            type: 'slider',
-            text: 'How interested are you in Visual Design & User Experience?'
-        },
-        // Section 2: Work Style
-        {
-            section: "Work Style",
-            id: 'workstyle_focus',
-            type: 'radio',
-            text: 'Do you prefer focusing on deep, specific tasks or big-picture strategy?',
-            options: [
-                { text: 'Mostly deep, specific tasks', value: 1 },
-                { text: 'A healthy mix of both', value: 3 },
-                { text: 'Mostly big-picture strategy', value: 5 }
-            ]
-        },
-        {
-            section: "Work Style",
-            id: 'workstyle_collaboration',
-            type: 'radio',
-            text: 'Do you work best alone or in a team?',
-            options: [
-                { text: 'I work best completely alone', value: 1 },
-                { text: 'I like a mix of solo and team work', value: 3 },
-                { text: 'I thrive in constant team collaboration', value: 5 }
-            ]
-        },
-        {
-            section: "Work Style",
-            id: 'workstyle_pace',
-            type: 'radio',
-            text: 'What work pace do you prefer?',
-            options: [
-                { text: 'A stable, predictable environment', value: 1 },
-                { text: 'A mix of stability and new challenges', value: 3 },
-                { text: 'A fast-paced, dynamic environment', value: 5 }
-            ]
-        },
-        {
-            section: "Work Style",
-            id: 'workstyle_problem_type',
-            type: 'radio',
-            text: 'What kind of problems do you prefer to solve?',
-            options: [
-                { text: 'Abstract, theoretical problems', value: 1 },
-                { text: 'A mix of both', value: 3 },
-                { text: 'Concrete, tangible products', value: 5 }
-            ]
-        },
-        // Section 3: Self-Assessed Skills
-        {
-            section: "Self-Assessed Skills",
-            id: 'skill_abstract_problem_solving',
-            type: 'slider',
-            text: 'Rate your confidence in Abstract Problem Solving (puzzles, logic).'
-        },
-        {
-            section: "Self-Assessed Skills",
-            id: 'skill_math_quantitative',
-            type: 'slider',
-            text: 'Rate your confidence in Mathematical & Quantitative Reasoning.'
-        },
-        {
-            section: "Self-Assessed Skills",
-            id: 'skill_communication_storytelling',
-            type: 'slider',
-            text: 'Rate your confidence in Communication & Storytelling.'
-        },
-        {
-            section: "Self-Assessed Skills",
-            id: 'skill_visual_design',
-            type: 'slider',
-            text: 'Rate your confidence in your sense for Visual Design & Aesthetics.'
-        },
-        {
-            section: "Self-Assessed Skills",
-            id: 'skill_leadership',
-            type: 'slider',
-            text: 'Rate your confidence in Leadership & People Management.'
-        },
-        // Section 4: Motivators & Preferences
-        {
-            section: "Motivators & Preferences",
-            id: 'motivator_primary_driver',
-            type: 'radio',
-            text: 'What is your single biggest motivator at work?',
-            options: [
-                { text: 'Solving complex technical challenges', value: 1 },
-                { text: 'Creating products that people love', value: 2 },
-                { text: 'Leading teams and achieving business goals', value: 3 },
-                { text: 'Achieving high financial rewards', value: 4 },
-                { text: 'Having creative freedom', value: 5 },
-            ]
-        },
-        {
-            section: "Motivators & Preferences",
-            id: 'motivator_risk_tolerance',
-            type: 'radio',
-            text: 'What\'s your risk tolerance?',
-            options: [
-                { text: 'Very risk-averse, prefer security', value: 1 },
-                { text: 'Cautiously optimistic', value: 3 },
-                { text: 'High risk-taker, enjoy uncertainty', value: 5 }
-            ]
-        },
-        {
-            section: "Motivators & Preferences",
-            id: 'pref_learning_style',
-            type: 'radio',
-            text: 'How do you prefer to learn a new, complex technology?',
-            options: [
-                { text: 'By reading official documentation and theory', value: 1 },
-                { text: 'By watching tutorials and guided projects', value: 2 },
-                { text: 'By immediately experimenting and breaking things', value: 3 },
-            ]
-        },
-        {
-            section: "Motivators & Preferences",
-            id: 'pref_project_type',
-            type: 'radio',
-            text: 'Do you prefer building new things or optimizing existing ones?',
-            options: [
-                { text: 'Build brand new things from scratch', value: 1 },
-                { text: 'A mix of both', value: 3 },
-                { text: 'Improve and optimize existing systems', value: 5 }
-            ]
-        },
-        {
-            section: "Motivators & Preferences",
-            id: 'pref_core_focus',
-            type: 'radio',
-            text: 'Are you more driven by the \'Why\' (Theory) or the \'How\' (Application)?',
-            options: [
-                { text: 'Theory (Understanding why it works)', value: 1 },
-                { text: 'A balance of both', value: 3 },
-                { text: 'Application (Just making it work)', value: 5 }
-            ]
-        },
-        {
-            section: "Motivators & Preferences",
-            id: 'pref_user_proximity',
-            type: 'radio',
-            text: 'How important is direct user interaction for you?',
-            options: [
-                { text: 'Not important, I prefer to focus on the tech', value: 1 },
-                { text: 'It\'s nice to have', value: 3 },
-                { text: 'Extremely important, I want to understand user needs', value: 5 }
-            ]
-        },
-        {
-            section: "Motivators & Preferences",
-            id: 'pref_patience_for_impact',
-            type: 'radio',
-            text: 'Do you prefer long-term projects or seeing results quickly?',
-            options: [
-                { text: 'Long-term projects with delayed impact', value: 1 },
-                { text: 'A mix of short and long-term goals', value: 3 },
-                { text: 'Short-term projects with quick results', value: 5 }
-            ]
-        },
-    ];
+    // Get all DOM elements
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const sectionTitle = document.getElementById('section-title');
+    const questionContainer = document.getElementById('question-container');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultsScreen = document.getElementById('results-screen');
+    const resultsContainer = document.getElementById('results-container');
+    const restartButton = document.getElementById('restart-btn');
 
-    const totalQuestions = quizData.length;
+    function showQuestion(index) {
+        const question = questionGroups[index];
+        questionContainer.innerHTML = ''; // Clear previous question
+        questionContainer.classList.remove('fade-in'); // Remove for re-animation
+        
+        // Use a slight delay to allow the fade-out/clear to register
+        setTimeout(() => {
+            const questionElement = document.createElement('div');
+            questionElement.className = 'question';
 
-    // --- Core Functions ---
+            let optionsHTML = '';
+            if (question.type === 'slider') {
+                optionsHTML = `<div class="slider-container"><input type="range" id="${question.id}" min="${question.min}" max="${question.max}" value="3" class="slider"><span class="slider-value">3</span></div>`;
+            } else if (question.type === 'radio') {
+                optionsHTML = '<div class="radio-options">';
+                for (const [value, text] of Object.entries(question.options)) {
+                    optionsHTML += `<button class="option-btn" data-value="${value}">${text}</button>`;
+                }
+                optionsHTML += '</div>';
+            } else if (question.type === 'select') {
+                 optionsHTML = `<div class="select-container"><select id="${question.id}">`;
+                 // Add a default, non-selectable option
+                 optionsHTML += `<option value="3" selected disabled>-- Select an option --</option>`;
+                for (const [value, text] of Object.entries(question.options)) {
+                    optionsHTML += `<option value="${value}">${text}</option>`;
+                }
+                optionsHTML += `</select></div>`;
+            }
 
-    function displayQuestion() {
-        if (currentQuestionIndex >= totalQuestions) {
-            showResults();
+            questionElement.innerHTML = `
+                <h2>${question.text}</h2>
+                ${optionsHTML}
+            `;
+            questionContainer.appendChild(questionElement);
+            questionContainer.classList.add('fade-in'); // Add animation class
+            
+            updateProgress(index);
+            addEventListeners(question);
+        }, 100); // 100ms delay
+    }
+
+    function addEventListeners(question) {
+        if (question.type === 'slider') {
+            const slider = document.getElementById(question.id);
+            const sliderValue = slider.nextElementSibling;
+            slider.addEventListener('input', () => sliderValue.textContent = slider.value);
+            // Auto-advance on slider 'change' (when user releases mouse)
+            slider.addEventListener('change', () => handleAnswer(question.id, slider.value));
+        } else if (question.type === 'radio') {
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Visually select the button
+                    buttons.forEach(btn => btn.classList.remove('selected'));
+                    button.classList.add('selected');
+                    // Handle the answer
+                    handleAnswer(question.id, button.dataset.value, button.textContent);
+                });
+            });
+        } else if (question.type === 'select') {
+            const select = document.getElementById(question.id);
+            select.addEventListener('change', () => handleAnswer(question.id, select.value, select.options[select.selectedIndex].text));
+        }
+    }
+
+    function handleAnswer(id, value) {
+        // Store the answer (as an integer)
+        userAnswers[id] = parseInt(value);
+
+        // Add a small delay for user to see their selection
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questionGroups.length) {
+                showQuestion(currentQuestionIndex);
+            } else {
+                fetchResults();
+            }
+        }, 400); // 400ms delay for feedback
+    }
+
+    function updateProgress(index) {
+        const progressPercentage = ((index + 1) / questionGroups.length) * 100;
+        progressBar.style.width = `${progressPercentage}%`;
+        progressText.textContent = `Question ${index + 1} of ${questionGroups.length}`;
+        sectionTitle.textContent = questionGroups[index].group;
+    }
+
+    async function fetchResults() {
+        // 1. Show loading state
+        quizScreen.classList.add('fade-out');
+        setTimeout(async () => {
+            quizScreen.style.display = 'none';
+            resultsScreen.style.display = 'flex';
+            resultsContainer.innerHTML = '<h2>Analyzing your profile...</h2>'; // Loading text
+            resultsScreen.classList.add('fade-in');
+            
+            try {
+                // 2. Send data to backend
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ answers: userAnswers }) // Send the answers
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok. Status: ${response.status}`);
+                }
+                
+                // 3. Parse the successful JSON response
+                const recommendations = await response.json();
+                
+                // 4. Display the results
+                showResults(recommendations);
+
+            } catch (error) {
+                // 5. Show an error if anything failed
+                console.error('Prediction failed:', error);
+                showError(error);
+            }
+        }, 500); // Wait for fade-out animation
+    }
+
+    function showResults(recommendations) {
+        // Check if the received data is an array
+        if (!Array.isArray(recommendations)) {
+            showError(new Error("The server returned data in an unexpected format."));
             return;
         }
 
-        const question = quizData[currentQuestionIndex];
-        let optionsHTML = '';
+        resultsContainer.innerHTML = '<h2>Your Top 5 Career Recommendations:</h2>';
+        const resultList = document.createElement('div');
+        resultList.className = 'result-list';
 
-        if (question.type === 'slider') {
-            optionsHTML = `
-                <div class="slider-container">
-                    <input type="range" id="${question.id}" min="1" max="5" value="3" class="option-slider">
-                    <div class="slider-value">3</div>
+        recommendations.forEach((rec, index) => {
+            const resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            resultItem.innerHTML = `
+                <div class="result-header">
+                    <span class="rec-number">${index + 1}</span>
+                    <span class="rec-career">${rec.career}</span>
+                </div>
+                <div class="confidence-display">
+                    <div class="confidence-bar-container">
+                        <div class="confidence-bar" style="width: ${rec.confidence.toFixed(2)}%;"></div>
+                    </div>
+                    <span class="confidence-text">${rec.confidence.toFixed(2)}% Match</span>
                 </div>
             `;
-        } else if (question.type === 'radio') {
-            optionsHTML = '<div class="options-container">';
-            question.options.forEach(option => {
-                optionsHTML += `<button class="option-btn" data-value="${option.value}">${option.text}</button>`;
-            });
-            optionsHTML += '</div>';
-        }
+            resultList.appendChild(resultItem);
+        });
+        resultsContainer.appendChild(resultList);
+    }
 
-        quizContent.innerHTML = `
-            <div class="question-card" id="current-question-card">
-                <p class="question-text">${question.text}</p>
-                ${optionsHTML}
-            </div>
+    function showError(error) {
+        resultsContainer.innerHTML = `
+            <h2>Prediction Failed</h2>
+            <p>Could not get a result. Please try again.</p>
+            <p style="font-size: 0.8em; color: #777;">Error: ${error.message}</p>
         `;
-
-        updateProgress();
-        addEventListenersToOptions();
     }
 
-    function addEventListenersToOptions() {
-        const question = quizData[currentQuestionIndex];
-        if (question.type === 'slider') {
-            const slider = document.querySelector('.option-slider');
-            const sliderValue = document.querySelector('.slider-value');
-            slider.addEventListener('input', () => {
-                sliderValue.textContent = slider.value;
-            });
-            // Sliders need a 'next' button or auto-advance on release
-            slider.addEventListener('change', () => {
-                 handleAnswer(parseInt(slider.value));
-            });
-        } else if (question.type === 'radio') {
-            document.querySelectorAll('.option-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    // Visually select the button
-                    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-                    e.currentTarget.classList.add('selected');
-                    // Handle the answer
-                    handleAnswer(parseInt(e.currentTarget.dataset.value));
-                });
-            });
-        }
-    }
-
-    function handleAnswer(value) {
-        const questionId = quizData[currentQuestionIndex].id;
-        userAnswers[questionId] = value;
-        
-        // Animate out the current question then show the next one
-        const card = document.getElementById('current-question-card');
-        card.classList.add('fade-out');
-        
-        setTimeout(() => {
-            currentQuestionIndex++;
-            displayQuestion();
-        }, 300); // Match animation duration in CSS
-    }
-
-    function updateProgress() {
-        const question = quizData[currentQuestionIndex];
-        const progressPercent = ((currentQuestionIndex) / totalQuestions) * 100;
-        
-        sectionTitle.textContent = question.section;
-        questionCounter.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
-        progressBar.style.width = `${progressPercent}%`;
-
-        // Change background color based on section
-        const sectionColors = {
-            "Technical Interests": "#e3f2fd",
-            "Work Style": "#e8eaf6",
-            "Self-Assessed Skills": "#e0f2f1",
-            "Motivators & Preferences": "#f3e5f5"
-        };
-        document.body.style.backgroundColor = sectionColors[question.section] || '#f0f2f5';
-    }
-
-    async function showResults() {
-        sectionTitle.textContent = "Analysis Complete!";
-        questionCounter.textContent = "";
-        progressBar.style.width = '100%';
-
-        // Animate view transition
-        quizView.classList.remove('active');
-        resultsView.classList.add('active');
-
-        careerResult.textContent = 'Analyzing your profile...';
-        confidenceResult.textContent = '';
-        
-        try {
-            // --- Send data to the Flask API ---
-            const response = await fetch('/api/predict', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userAnswers)
-            });
-
-            if (!response.ok) {
-                throw new Error(`Server error: ${response.statusText}`);
-            }
-
-            const result = await response.json();
-            
-            careerResult.textContent = result.career;
-            confidenceResult.textContent = `Confidence: ${result.confidence.toFixed(2)}%`;
-
-        } catch (error) {
-            console.error("Error fetching prediction:", error);
-            careerResult.textContent = 'Prediction Failed';
-            confidenceResult.textContent = 'Could not get a result. Please try again.';
-        }
-    }
-
-    function restartQuiz() {
+    restartButton.addEventListener('click', () => {
+        // Reset state
         currentQuestionIndex = 0;
         Object.keys(userAnswers).forEach(key => delete userAnswers[key]);
         
-        resultsView.classList.remove('active');
-        quizView.classList.add('active');
+        // Transition screens
+        resultsScreen.classList.remove('fade-in');
+        resultsScreen.style.display = 'none';
+        quizScreen.classList.remove('fade-out');
+        quizScreen.style.display = 'block';
         
-        // Delay to allow view transition before showing first question
-        setTimeout(displayQuestion, 500);
-    }
+        // Start the quiz over
+        showQuestion(0);
+    });
 
-    // --- Event Listeners ---
-    restartBtn.addEventListener('click', restartQuiz);
-
-    // --- Initial Load ---
-    displayQuestion();
+    // Start the quiz on page load
+    showQuestion(0);
 });

@@ -2,46 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Career Prediction Journey</title>
-    <!-- Link to the CSS file -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <!-- Link to Google Fonts for a modern look -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-container">
-        <div id="quiz-view" class="view active">
-            <div id="progress-container">
-                <div class="progress-text">
-                    <span id="section-title">Starting Up...</span>
-                    <span id="question-counter"></span>
+    <div class="quiz-container">
+        <div id="quiz-screen" class="screen">
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span id="section-title">Starting...</span>
+                    <span id="progress-text">Question 0 of 0</span>
                 </div>
                 <div class="progress-bar-background">
-                    <div id="progress-bar-foreground"></div>
+                    <div id="progress-bar"></div>
                 </div>
             </div>
-
-            <!-- Quiz Content Area -->
-            <div id="quiz-content">
-                <!-- Questions will be dynamically inserted here by script.js -->
-            </div>
+            <div id="question-container">
+                </div>
         </div>
 
-        <!-- Results View -->
-        <div id="results-view" class="view">
-            <div class="results-card">
-                <h2>Your Recommended Career Is...</h2>
-                <h1 id="career-result"></h1>
-                <p id="confidence-result"></p>
-                <button id="restart-btn">Restart Journey</button>
-            </div>
+        <div id="results-screen" class="screen">
+            <div id="results-container">
+                </div>
+            <button id="restart-btn">Restart Journey</button>
         </div>
     </div>
 
-    <!-- Link to the JavaScript file (defer ensures HTML is loaded first) -->
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </body>
 </html>
